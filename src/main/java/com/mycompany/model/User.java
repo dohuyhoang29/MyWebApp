@@ -1,4 +1,4 @@
-package com.mycompany.user;
+package com.mycompany.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,6 +25,8 @@ public class User {
 
   @Column(length = 45, nullable = false, name = "last_name")
   private String lastName;
+
+  private boolean enable;
 
 
 
@@ -66,6 +68,14 @@ public class User {
 
   public void setLastName(String lastName) {
     this.lastName = lastName;
+  }
+
+  public boolean isEnable() {
+    return enable;
+  }
+
+  public void setEnable(boolean enable) {
+    this.enable = enable;
   }
 
   @Override
