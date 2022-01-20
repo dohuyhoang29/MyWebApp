@@ -1,22 +1,27 @@
 package com.mycompany.controller;
 
 import com.mycompany.model.User;
+import com.mycompany.respositories.UserRespository;
 import com.mycompany.service.UserNotFoundException;
 import com.mycompany.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class UserController {
     @Autowired
     private UserService service;
+    @Autowired
+    private UserRespository repo;
 
     @GetMapping("/users")
     public String showUserList (Model model) {
@@ -62,5 +67,26 @@ public class UserController {
             ra.addFlashAttribute("message", e.getMessage());
         }
         return "redirect:/users";
+    }
+
+    @GetMapping("/login")
+    public String showLoginForm (Model model) {
+        model.addAttribute("user", new User());
+        return "login";
+    }
+
+    @PostMapping("/login")
+    public String login (@ModelAttribute("user") User user, Model model) throws UserNotFoundException {
+        Optional<User> check = repo.findUserByEmail(user.getEmail());
+        if (check.isPresent()) {
+            if (user.getPassword().equalsIgnoreCase(check.get().getPassword())) {
+                return "redirect:/users";
+            } else {
+                model.addAttribute("message", "Password is correct");
+            }
+        } else {
+            model.addAttribute("message", "The email is not exists");
+        }
+        return "login";
     }
 }
